@@ -38,12 +38,12 @@ struct ProfileView: View {
                     Divider()
                     
                     // 2. ปุ่มรายการโปรด
-                    NavigationLink(destination: FavoritesView()) {
+                    NavigationLink(destination: FavoritesView(viewModel: viewModel)) {
                         ProfileListButton(title: "รายการโปรด", iconName: "heart.fill")
                     }
                     
                     // 3. ปุ่มโพสต์ของฉัน
-                    NavigationLink(destination: MyPostsView()) {
+                    NavigationLink(destination: MyPostsView(viewModel: viewModel)) {
                         ProfileListButton(title: "โพสต์ของฉัน", iconName: "list.bullet.clipboard.fill")
                     }
                     

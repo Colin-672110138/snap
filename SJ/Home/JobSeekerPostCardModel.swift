@@ -1,27 +1,20 @@
-//
-//  JobSeekerPostCardModel.swift
-//  SJ
-//
-//  Created by colin black on 13/11/2568 BE.
-//
-
 // Models/JobSeekerPostCardModel.swift
 
 import Foundation
 import UIKit // สำหรับ UIImage
 
 // ข้อมูลโพสต์ที่ผู้หางานสร้าง (ที่ผู้จ้างงานเห็น)
-struct JobSeekerPostCardModel: Identifiable {
+struct JobSeekerPostCardModel: Identifiable, Equatable {
     let id = UUID()
-    let postID: String = UUID().uuidString
+    let postID: String
     
     // Header/Profile Data
-    let profileImage: UIImage = UIImage(systemName: "person.circle.fill")!
+    let profileImage: UIImage
     let userName: String
     let postTime: String
     let hourlyRate: String // ค่าแรงต่อวัน/ชั่วโมง (เช่น "300/วัน")
-    let currentRating: Double // 4.5
-    let reviewCount: Int // (10 จำนวนคน)
+    var currentRating: Double // 4.5
+    var reviewCount: Int // (10 จำนวนคน)
     var isFavorite: Bool
     
     // Body Data
@@ -31,4 +24,9 @@ struct JobSeekerPostCardModel: Identifiable {
     let numberPeople: Int
     let contactNumber: String
     let startDate: String // วันที่เริ่มงาน
+    
+    // เทียบความเท่ากันจาก postID
+    static func == (lhs: JobSeekerPostCardModel, rhs: JobSeekerPostCardModel) -> Bool {
+        lhs.postID == rhs.postID
+    }
 }

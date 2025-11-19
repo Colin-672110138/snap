@@ -1,58 +1,51 @@
-//
-//  EmployerPostDetailView.swift
-//  SJ
-//
-//  Created by colin black on 13/11/2568 BE.
-//
-
-// Views/Posting/EmployerPostDetailView.swift (New File)
-
 import SwiftUI
 
 struct EmployerPostDetailView: View {
     let post: EmployerPostCardModel
+    @ObservedObject var viewModel: OnboardingViewModel
     
-    // Mock Review Data (ReviewModel ถูกสร้างไว้แล้วในขั้นตอนก่อนหน้า)
-    let mockReviews: [ReviewModel] = [
-        ReviewModel(reviewerName: "คุณสมหญิง", rating: 5),
-        ReviewModel(reviewerName: "คุณ A", rating: 4),
-        ReviewModel(reviewerName: "คุณ B", rating: 5)
-    ]
+    @State private var showingRatingSheet = false
+    
+    // รีวิวจริงจาก ViewModel
+    var reviews: [ReviewModel] {
+        viewModel.employerReviewsByPostID[post.postID] ?? []
+    }
     
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
-                // MARK: - 1. รูปภาพหลัก (Center Top)
+                // 1. รูปหลัก
                 Image(uiImage: post.postImage)
                     .resizable()
                     .scaledToFit()
                     .frame(maxWidth: .infinity, maxHeight: 300)
                     .clipped()
                 
-                // MARK: - 2. Card โพสต์ที่ไม่มีรูป (Details Card)
+                // 2. Card รายละเอียด
                 VStack(alignment: .leading, spacing: 10) {
-                    
                     Text("รายละเอียดงาน")
                         .font(.title3)
                         .bold()
                         .padding(.bottom, 5)
                     
-                    // --- Header ---
                     HStack(alignment: .top) {
                         Image(uiImage: post.profileImage)
-                            .resizable().frame(width: 40, height: 40).clipShape(Circle())
+                            .resizable()
+                            .frame(width: 40, height: 40)
+                            .clipShape(Circle())
                         
                         VStack(alignment: .leading) {
                             Text(post.farmName).font(.headline)
                             Text(post.postTime).font(.caption).foregroundColor(.secondary)
                         }
                         Spacer()
-                        Text("\(post.letCompensation)").font(.headline).foregroundColor(.green)
+                        Text(post.letCompensation)
+                            .font(.headline)
+                            .foregroundColor(.green)
                     }
                     
                     Divider()
                     
-                    // --- Body Details ---
                     VStack(alignment: .leading, spacing: 5) {
                         Text(post.title).font(.title2).bold()
                         DetailRow(label: "จังหวัด", value: post.province)
@@ -68,22 +61,49 @@ struct EmployerPostDetailView: View {
                 .shadow(radius: 3)
                 .padding(.horizontal)
                 
-                // MARK: - 3. ส่วนรีวิว/ให้คะแนน
-                VStack(alignment: .leading) {
+                // 3. รีวิว/ให้คะแนน
+                VStack(alignment: .leading, spacing: 10) {
                     HStack {
                         Text("รีวิว/ให้คะแนน").font(.title3).bold()
                         Spacer()
-                        Button("รีวิว/ให้คะแนน") {
-                            // TODO: Show Review Modal
+                        Button("ให้คะแนน") {
+                            showingRatingSheet = true
                         }
                     }
-                    .padding(.bottom, 10)
                     
-                    // Feed รีวิว
-                    VStack(spacing: 15) {
-                        ForEach(mockReviews) { review in
-                            ReviewRow(review: review)
+                    if reviews.isEmpty {
+                        Text("ยังไม่มีการให้คะแนน")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    } else {
+                        HStack(spacing: 6) {
+                            Image(systemName: "star.fill")
+                                .foregroundColor(.yellow)
+                            Text(String(format: "%.1f", post.currentRating))
+                                .bold()
+                            Text("จาก \(reviews.count) คน")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
                         }
+                        
+                        VStack(alignment: .leading, spacing: 8) {
+                            ForEach(reviews) { review in
+                                HStack {
+                                    HStack(spacing: 2) {
+                                        ForEach(0..<review.rating, id: \.self) { _ in
+                                            Image(systemName: "star.fill")
+                                                .foregroundColor(.yellow)
+                                                .font(.caption)
+                                        }
+                                    }
+                                    Spacer()
+                                    Text(review.reviewerName)
+                                        .font(.caption)
+                                        .foregroundColor(.secondary)
+                                }
+                            }
+                        }
+                        .padding(.top, 6)
                     }
                 }
                 .padding(.horizontal)
@@ -91,8 +111,25 @@ struct EmployerPostDetailView: View {
             }
         }
         .navigationTitle(post.title)
+        .sheet(isPresented: $showingRatingSheet) {
+            ReviewInputSheet(title: "ให้คะแนนสวน/ผู้จ้างงาน") { rating in
+                viewModel.addReview(forEmployerPost: post, rating: rating)
+            }
+        }
+    }
+    struct DetailRow: View {
+        let label: String
+        let value: String
+
+        var body: some View {
+            HStack {
+                Text("\(label):")
+                    .bold()
+                    .frame(width: 80, alignment: .leading)
+                Text(value)
+                Spacer()
+            }
+            .font(.subheadline)
+        }
     }
 }
-
-// Note: DetailRow และ ReviewRow structs ถูกสร้างไว้ในขั้นตอนก่อนหน้า
-// ReviewModel ถูกสร้างไว้แล้วในขั้นตอนก่อนหน้า

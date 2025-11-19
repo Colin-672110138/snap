@@ -1,24 +1,16 @@
-//
-//  JobSeekerPostSummaryCard.swift
-//  SJ
-//
-//  Created by colin black on 13/11/2568 BE.
-//
-
-// Views/Component/JobSeekerPostSummaryCard.swift (New File)
-
 import SwiftUI
 
 struct JobSeekerPostSummaryCard: View {
+    @ObservedObject var viewModel: OnboardingViewModel
     let post: JobSeekerPostCardModel
-    // State สำหรับจัดการรายการโปรด (Mock-up)
+    let onToggleFavorite: (JobSeekerPostCardModel) -> Void
+    
     @State private var isFavorite: Bool = false
 
     var body: some View {
-        // ใช้ NavigationLink เพื่อนำไปสู่หน้า Detail View
-        NavigationLink(destination: JobSeekerPostDetailView(post: post)) {
+        NavigationLink(destination: JobSeekerPostDetailView(post: post, viewModel: viewModel)) {
             VStack(alignment: .leading, spacing: 10) {
-                // MARK: - Card Header (Profile Info, Rate, Favorite)
+                // Header
                 HStack(alignment: .top) {
                     Image(uiImage: post.profileImage)
                         .resizable()
@@ -32,25 +24,28 @@ struct JobSeekerPostSummaryCard: View {
                     
                     Spacer()
                     
-                    // ราคาค่าแรง + ปุ่มรายการโปรด
                     VStack(alignment: .trailing) {
-                        Text("\(post.hourlyRate)") // 300/วัน
-                            .font(.headline).foregroundColor(.green)
+                        Text(post.hourlyRate)
+                            .font(.headline)
+                            .foregroundColor(.green)
                         
-                        // ปุ่มรายการโปรด
-                        Button(action: { isFavorite.toggle() }) {
+                        Button(action: {
+                            onToggleFavorite(post)
+                            isFavorite.toggle()
+                        }) {
                             Image(systemName: isFavorite ? "star.fill" : "star")
                                 .foregroundColor(isFavorite ? .yellow : .gray)
                         }
-                        .onAppear { self.isFavorite = post.isFavorite } // โหลดสถานะเริ่มต้น
+                        .onAppear {
+                            self.isFavorite = post.isFavorite
+                        }
                     }
                 }
                 
                 Divider()
                 
-                // MARK: - Card Body (Image, Title, Details)
+                // Body
                 HStack(spacing: 15) {
-                    // รูปภาพโพสต์
                     Image(uiImage: post.postImage)
                         .resizable()
                         .scaledToFill()
@@ -59,10 +54,10 @@ struct JobSeekerPostSummaryCard: View {
                         .clipped()
                     
                     VStack(alignment: .leading) {
-                        // หัวข้อ
-                        Text(post.title).font(.headline).lineLimit(1)
+                        Text(post.title)
+                            .font(.headline)
+                            .lineLimit(1)
                         
-                        // รายละเอียด
                         Text("จังหวัด: \(post.province)").font(.caption)
                         Text("คนงาน: \(post.numberPeople) คน | ติดต่อ: \(post.contactNumber)").font(.caption)
                         Text("เริ่มงาน: \(post.startDate)").font(.caption)
@@ -71,12 +66,13 @@ struct JobSeekerPostSummaryCard: View {
                 
                 Divider()
                 
-                // MARK: - Card Footer (Rating)
+                // Rating
                 HStack {
-                    // Rating Star
                     Image(systemName: "star.fill").foregroundColor(.yellow)
                     Text("\(post.currentRating, specifier: "%.1f")").bold()
-                    Text("(\(post.reviewCount) จำนวนคน)").font(.caption).foregroundColor(.secondary)
+                    Text("(\(post.reviewCount) จำนวนคน)")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
                 }
                 .padding(.bottom, 5)
             }
@@ -85,6 +81,6 @@ struct JobSeekerPostSummaryCard: View {
             .cornerRadius(12)
             .shadow(radius: 3)
         }
-        .buttonStyle(.plain) // ป้องกันสีเปลี่ยนเมื่อกด NavigationLink
+        .buttonStyle(.plain)
     }
 }

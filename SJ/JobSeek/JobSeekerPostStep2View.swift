@@ -35,10 +35,12 @@ struct JobSeekerPostStep2View: View {
             Spacer()
             
             Button("สร้างโพสต์") {
-                // Logic: บันทึก postData และนำทางกลับไปยัง Tab Home
+                viewModel.addJobSeekerPost(from: postData)
+                
                 print("--- โพสต์ของผู้หางานถูกสร้างแล้ว ---")
                 showingSuccessAlert = true
             }
+
             .frame(maxWidth: .infinity)
             .padding()
             .background(isStep2Ready ? Color.blue : Color.gray)

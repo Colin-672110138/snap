@@ -1,23 +1,17 @@
-//
-//  EmployerPostSummaryCard.swift
-//  SJ
-//
-//  Created by colin black on 13/11/2568 BE.
-//
-
-// Views/Component/EmployerPostSummaryCard.swift (New File)
+// Views/Component/EmployerPostSummaryCard.swift
 
 import SwiftUI
 
 struct EmployerPostSummaryCard: View {
+    @ObservedObject var viewModel: OnboardingViewModel   // ✅ เพิ่มบรรทัดนี้
     let post: EmployerPostCardModel
-    @State private var isFavorite: Bool = false
+    let onToggleFavorite: (EmployerPostCardModel) -> Void
 
     var body: some View {
-        // ใช้ NavigationLink เพื่อนำไปสู่หน้า Detail View
-        NavigationLink(destination: EmployerPostDetailView(post: post)) {
+        // ✅ ส่ง viewModel เข้าไปในหน้า Detail ด้วย
+        NavigationLink(destination: EmployerPostDetailView(post: post, viewModel: viewModel)) {
             VStack(alignment: .leading, spacing: 10) {
-                // MARK: - Card Header (Profile Info, Rate, Favorite)
+                // MARK: - Card Header
                 HStack(alignment: .top) {
                     Image(uiImage: post.profileImage)
                         .resizable()
@@ -31,25 +25,24 @@ struct EmployerPostSummaryCard: View {
                     
                     Spacer()
                     
-                    // ราคาค่าแรง + ปุ่มรายการโปรด
                     VStack(alignment: .trailing) {
-                        Text("\(post.letCompensation)") // 500/วัน
-                            .font(.headline).foregroundColor(.green)
+                        Text("\(post.letCompensation)")
+                            .font(.headline)
+                            .foregroundColor(.green)
                         
-                        // ปุ่มรายการโปรด
-                        Button(action: { isFavorite.toggle() }) {
-                            Image(systemName: isFavorite ? "star.fill" : "star")
-                                .foregroundColor(isFavorite ? .yellow : .gray)
+                        Button(action: {
+                            onToggleFavorite(post)
+                        }) {
+                            Image(systemName: post.isFavorite ? "star.fill" : "star")
+                                .foregroundColor(post.isFavorite ? .yellow : .gray)
                         }
-                        .onAppear { self.isFavorite = post.isFavorite }
                     }
                 }
                 
                 Divider()
                 
-                // MARK: - Card Body (Image, Title, Details)
+                // MARK: - Card Body
                 HStack(spacing: 15) {
-                    // รูปภาพโพสต์
                     Image(uiImage: post.postImage)
                         .resizable()
                         .scaledToFill()
@@ -58,10 +51,10 @@ struct EmployerPostSummaryCard: View {
                         .clipped()
                     
                     VStack(alignment: .leading) {
-                        // หัวข้อ
-                        Text(post.title).font(.headline).lineLimit(1)
+                        Text(post.title)
+                            .font(.headline)
+                            .lineLimit(1)
                         
-                        // รายละเอียด
                         Text("จังหวัด: \(post.province)").font(.caption)
                         Text("พื้นที่: \(post.areaSize) | สวัสดิการ: \(post.welfare)").font(.caption)
                         Text("เริ่มงาน: \(post.startDate)").font(.caption)
@@ -70,9 +63,8 @@ struct EmployerPostSummaryCard: View {
                 
                 Divider()
                 
-                // MARK: - Card Footer (Rating)
+                // MARK: - Rating
                 HStack {
-                    // Rating Star
                     Image(systemName: "star.fill").foregroundColor(.yellow)
                     Text("\(post.currentRating, specifier: "%.1f")").bold()
                     Text("(\(post.reviewCount) รีวิว)").font(.caption).foregroundColor(.secondary)

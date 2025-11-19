@@ -36,7 +36,9 @@ struct EmployerPostStep2View: View {
             Spacer()
             
             Button("สร้างโพสต์") {
-                // Logic: บันทึก postData และนำทางกลับไปยัง Tab Home
+                // บันทึก postData จริง
+                viewModel.addEmployerPost(from: postData)
+                
                 print("--- โพสต์ของผู้จ้างงานถูกสร้างแล้ว ---")
                 showingSuccessAlert = true
             }
