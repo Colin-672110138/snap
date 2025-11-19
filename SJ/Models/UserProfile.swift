@@ -34,6 +34,7 @@ struct UserProfile: Codable {
     var longanTrees: String = ""       // จำนวนต้นลำไย
     var workType: String = ""          // ประเภทงานที่ต้องการ
     var province: String = ""
+    
 
     // ... อื่นๆ
 }

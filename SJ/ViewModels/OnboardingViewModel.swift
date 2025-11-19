@@ -402,6 +402,17 @@ class OnboardingViewModel: ObservableObject {
     }
 
     
+    func getRandomMatchedJobSeekers(forProvince province: String) -> [JobSeekerPostCardModel] {
+        let filtered = jobSeekerFeedPosts.filter { $0.province == province }
+        return Array(filtered.shuffled().prefix(5))
+    }
+
+    func getRandomMatchedEmployerPosts(forProvince province: String) -> [EmployerPostCardModel] {
+        let filtered = employerFeedPosts.filter { $0.province == province }
+        return Array(filtered.shuffled().prefix(5))
+    }
+
+    
     
     
     

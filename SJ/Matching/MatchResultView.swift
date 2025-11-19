@@ -1,39 +1,52 @@
-//
-//  MatchResultView.swift
-//  SJ
-//
-//  Created by colin black on 19/11/2568 BE.
-//
-
 import SwiftUI
 
 struct MatchResultView: View {
     @ObservedObject var viewModel: OnboardingViewModel
-    
-    var matchedPosts: [JobSeekerPostCardModel] {
-        let province = viewModel.userProfile.province
-        return viewModel.getMatchedJobSeekers(forProvince: province)
-    }
+    @State private var matchedPosts: [JobSeekerPostCardModel] = []
     
     var body: some View {
         ScrollView {
-            VStack(spacing: 12) {
+            VStack(spacing: 16) {
+
+                // ⭐ รายชื่อผลแมตช์
                 if matchedPosts.isEmpty {
                     Text("ไม่มีคนหางานในจังหวัดเดียวกับคุณตอนนี้")
                         .foregroundColor(.secondary)
-                        .padding()
+                        .padding(.top, 20)
                 } else {
                     ForEach(matchedPosts) { post in
                         matchRow(post)
                     }
                 }
+
+                // ⭐ ปุ่มจับคู่ใหม่ (อยู่ล่างสุด)
+                Button(action: refreshMatching) {
+                    Text("จับคู่ใหม่")
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                        .foregroundColor(.white)
+                        .background(Color.green)
+                        .cornerRadius(12)
+                        .font(.headline)
+                }
+                .padding(.top, 10)
             }
             .padding()
         }
         .navigationTitle("ผลการจับคู่")
         .navigationBarTitleDisplayMode(.inline)
+        .onAppear {
+            refreshMatching()   // โหลดรอบแรก
+        }
     }
     
+    // MARK: - ฟังก์ชันสุ่มคนใหม่
+    func refreshMatching() {
+        let province = viewModel.userProfile.province
+        matchedPosts = viewModel.getRandomMatchedJobSeekers(forProvince: province)
+    }
+    
+    // MARK: - แถวโชว์ข้อมูลผลแมตช์
     @ViewBuilder
     func matchRow(_ post: JobSeekerPostCardModel) -> some View {
         VStack(alignment: .leading, spacing: 6) {
