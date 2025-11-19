@@ -81,6 +81,9 @@ struct AppEntry: App {
                         self.onboardingVM.userProfile.lineID = profile.userID
                         self.onboardingVM.userProfile.name = profile.displayName
                         
+                        // Reset isLoggedOut flag เมื่อ login สำเร็จ
+                        self.onboardingVM.isLoggedOut = false
+                        
                         // Set authenticated
                         self.onboardingVM.isAuthenticated = true
                         print("Login completed successfully - isAuthenticated set to: \(self.onboardingVM.isAuthenticated)")

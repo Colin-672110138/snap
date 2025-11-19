@@ -46,8 +46,39 @@ class LineLoginService: ObservableObject {
     
     private func performLogin(in viewController: UIViewController?, completion: @escaping (Result<LineUserProfile, Error>) -> Void) {
         print("Starting LINE login process...")
-        // ใช้ login method แบบเดิม แต่ตรวจสอบ isLoggingIn ก่อน
-        LoginManager.shared.login(permissions: [.profile, .openID], in: viewController) { result in
+        
+        // ตรวจสอบว่ามี login process เก่าค้างอยู่หรือไม่
+        // ถ้ามี ให้ logout ก่อนเพื่อเคลียร์ state
+        if LoginManager.shared.isAuthorized {
+            print("Previous login session detected, logging out first...")
+            LoginManager.shared.logout { _ in
+                DispatchQueue.main.async {
+                    // หลังจาก logout แล้วค่อย login ใหม่
+                    self.performLoginAfterLogout(in: viewController, completion: completion)
+                }
+            }
+            return
+        }
+        
+        performLoginAfterLogout(in: viewController, completion: completion)
+    }
+    
+    @MainActor
+    private func performLoginAfterLogout(in viewController: UIViewController?, completion: @escaping (Result<LineUserProfile, Error>) -> Void) {
+        print("Performing LINE login after logout...")
+        
+        // สร้าง LoginManager.Parameters เพื่อให้สามารถ recreate login process ได้
+        // ใช้วิธีนี้เพื่อแก้ปัญหา "Trying to start another login process while previous process is still valid"
+        var loginParameters = LoginManager.Parameters()
+        loginParameters.allowRecreatingLoginProcess = true
+        
+        // ใช้ login method ที่ถูกต้องตามลำดับพารามิเตอร์:
+        // permissions, in viewController, parameters, completionHandler
+        LoginManager.shared.login(
+            permissions: [.profile, .openID],
+            in: viewController,
+            parameters: loginParameters
+        ) { result in
             print("LINE Login callback received")
             switch result {
             case .success(_):
@@ -102,11 +133,16 @@ class LineLoginService: ObservableObject {
     
     // MARK: - Logout
     func logout(completion: @escaping (Result<Void, Error>) -> Void) {
+        // Reset isLoggingIn flag ก่อน logout
+        setLoggingIn(false)
+        
         LoginManager.shared.logout { result in
             switch result {
             case .success:
+                print("LINE SDK logout successful")
                 completion(.success(()))
             case .failure(let error):
+                print("LINE SDK logout error: \(error.localizedDescription)")
                 completion(.failure(error))
             }
         }

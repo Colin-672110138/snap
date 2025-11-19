@@ -59,9 +59,11 @@ class OnboardingViewModel: ObservableObject {
     
     // MARK: - LINE Login
     func performLineLogin() {
+        print("performLineLogin called - isLoggingIn: \(LineLoginService.shared.isLoggingIn), isAuthenticated: \(isAuthenticated), isLoggedOut: \(isLoggedOut)")
+        
         // ตรวจสอบว่ามี login process อยู่แล้วหรือไม่
         if LineLoginService.shared.isLoggingIn {
-            print("Login process is already in progress")
+            print("Login process is already in progress - waiting...")
             // ถ้ามี process อยู่แล้ว ให้รอสักครู่แล้วตรวจสอบอีกครั้ง
             DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
                 self.checkLoginStatus()
@@ -69,6 +71,7 @@ class OnboardingViewModel: ObservableObject {
             return
         }
         
+        print("Starting new login process...")
         LineLoginService.shared.setLoggingIn(true)
         LineLoginService.shared.login { [weak self] result in
             DispatchQueue.main.async {
@@ -80,6 +83,9 @@ class OnboardingViewModel: ObservableObject {
                     // บันทึกข้อมูลจาก LINE
                     self?.userProfile.lineID = lineProfile.userID
                     self?.userProfile.name = lineProfile.displayName
+                    
+                    // Reset isLoggedOut flag เมื่อ login สำเร็จ
+                    self?.isLoggedOut = false
                     
                     // Set authenticated ทันที (ไม่ต้อง delay)
                     self?.isAuthenticated = true
@@ -111,6 +117,9 @@ class OnboardingViewModel: ObservableObject {
                         self?.userProfile.lineID = profile.userID
                         self?.userProfile.name = profile.displayName
                         
+                        // Reset isLoggedOut flag เมื่อ login สำเร็จ
+                        self?.isLoggedOut = false
+                        
                         // Set authenticated
                         self?.isAuthenticated = true
                         print("isAuthenticated set to true in checkLoginStatus")
@@ -131,6 +140,9 @@ class OnboardingViewModel: ObservableObject {
         // Mock Data: สมมติว่าดึงชื่อมาได้
         userProfile.lineID = "UDl97943DWfsePV34p890"
         userProfile.name = "Rachanon" // ชื่อที่ดึงมาจาก LINE
+        
+        // Reset isLoggedOut flag เมื่อ login สำเร็จ
+        isLoggedOut = false
         
         // หากสำเร็จ
         isAuthenticated = true
@@ -198,6 +210,10 @@ class OnboardingViewModel: ObservableObject {
             }
     
     func logout() {
+        print("Logout called")
+        // Reset isLoggingIn flag ก่อน logout
+        LineLoginService.shared.setLoggingIn(false)
+        
         // Logout จาก LINE SDK
         LineLoginService.shared.logout { [weak self] result in
             DispatchQueue.main.async {
@@ -217,8 +233,12 @@ class OnboardingViewModel: ObservableObject {
                 self?.hasSelectedRole = false
                 self?.isLoggedOut = true
                 
+                // Reset isLoggingIn flag อีกครั้งเพื่อให้แน่ใจ
+                LineLoginService.shared.setLoggingIn(false)
+                
                 // กำหนดให้ isAuthenticated เป็น false (ต้องทำเป็นลำดับสุดท้าย)
                 self?.isAuthenticated = false
+                print("Logout completed - isAuthenticated: \(self?.isAuthenticated ?? false), isLoggingIn: \(LineLoginService.shared.isLoggingIn)")
             }
         }
     }
