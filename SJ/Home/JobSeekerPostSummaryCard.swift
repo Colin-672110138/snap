@@ -33,8 +33,8 @@ struct JobSeekerPostSummaryCard: View {
                             onToggleFavorite(post)
                             isFavorite.toggle()
                         }) {
-                            Image(systemName: isFavorite ? "star.fill" : "star")
-                                .foregroundColor(isFavorite ? .yellow : .gray)
+                            Image(systemName: post.isFavorite ? "heart.fill" : "heart")
+                                .foregroundColor(post.isFavorite ? .red : .gray)
                         }
                         .onAppear {
                             self.isFavorite = post.isFavorite

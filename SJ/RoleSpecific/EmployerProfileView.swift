@@ -52,7 +52,7 @@ struct EmployerProfileView: View {
             }
             
             // ปุ่มเสร็จสิ้น
-            Button("กำเนินการต่อ") {
+            Button("ดำเนินการต่อ") {
                 // แปลง String เป็น Int
                 let rai = Int(raiInput)
                 let ngan = Int(nganInput)

@@ -33,8 +33,8 @@ struct EmployerPostSummaryCard: View {
                         Button(action: {
                             onToggleFavorite(post)
                         }) {
-                            Image(systemName: post.isFavorite ? "star.fill" : "star")
-                                .foregroundColor(post.isFavorite ? .yellow : .gray)
+                            Image(systemName: post.isFavorite ? "heart.fill" : "heart")
+                                .foregroundColor(post.isFavorite ? .red : .gray)
                         }
                     }
                 }

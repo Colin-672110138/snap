@@ -3,10 +3,12 @@ import SwiftUI
 struct RoleSpecificHomeView: View {
     @ObservedObject var viewModel: OnboardingViewModel
     @State private var searchText: String = ""
+    @State private var showingMatchConfirm = false
     
     var body: some View {
         ScrollView {
             VStack(spacing: 0) {
+                
                 // MARK: - Header
                 HStack(alignment: .center) {
                     Spacer()
@@ -18,9 +20,9 @@ struct RoleSpecificHomeView: View {
                         .font(.largeTitle)
                         .bold()
                         .foregroundColor(.green)
-                    
+
                     Spacer()
-                    
+
                     Button(action: {}) {
                         Image(systemName: "bell.fill")
                             .foregroundColor(.primary)
@@ -43,7 +45,6 @@ struct RoleSpecificHomeView: View {
                         .foregroundColor(.gray)
                         .padding(.trailing, 10)
                 }
-
                 .padding(.vertical, 5)
                 .background(Color(.systemGray6))
                 .cornerRadius(8)
@@ -60,9 +61,9 @@ struct RoleSpecificHomeView: View {
                     Text(viewModel.userProfile.role == .employer ? "โพสต์หางาน" : "โพสต์จ้างงาน")
                         .font(.title3)
                         .bold()
-                    
+
                     Spacer()
-                    
+
                     if viewModel.userProfile.role == .employer {
                         NavigationLink(destination: AllJobSeekerPostsView(
                             viewModel: viewModel,
@@ -73,15 +74,13 @@ struct RoleSpecificHomeView: View {
                         }
                     } else {
                         NavigationLink(destination: AllEmployerPostsView(
-                            viewModel: viewModel,          // ✅ ส่ง viewModel เข้าไป
+                            viewModel: viewModel,
                             posts: filteredEmployerFeed
                         )) {
                             Text("ทั้งหมด")
                                 .font(.subheadline)
                         }
                     }
-
-
                 }
                 .padding(.horizontal)
                 
@@ -89,16 +88,21 @@ struct RoleSpecificHomeView: View {
                 VStack(spacing: 15) {
                     if viewModel.userProfile.role == .employer {
                         ForEach(filteredJobSeekerFeed) { post in
-                            JobSeekerPostSummaryCard(viewModel: viewModel, post: post) { post in
-                                    viewModel.toggleFavorite(for: post)
-                                }
+                            JobSeekerPostSummaryCard(
+                                viewModel: viewModel,
+                                post: post
+                            ) { post in
+                                viewModel.toggleFavorite(for: post)
+                            }
                         }
                     } else {
                         ForEach(filteredEmployerFeed) { post in
-                            EmployerPostSummaryCard(viewModel: viewModel, post: post) { post in
+                            EmployerPostSummaryCard(
+                                viewModel: viewModel,
+                                post: post
+                            ) { post in
                                 viewModel.toggleFavorite(for: post)
                             }
-
                         }
                     }
                 }
@@ -108,7 +112,22 @@ struct RoleSpecificHomeView: View {
         .onAppear {
             viewModel.loadMockPostsIfNeeded()
         }
+        
+        // MARK: - 🔥 ADD FLOATING MATCH BUTTON + SHEET HERE
+        .overlay(
+            MatchingButton {
+                showingMatchConfirm = true
+            }
+            .padding(),
+            alignment: .bottomTrailing
+        )
+        .sheet(isPresented: $showingMatchConfirm) {
+            ConfirmProfileForMatchView(viewModel: viewModel)
+        }
     }
+    
+    
+    
     
     // MARK: - Filter ด้วย searchText: จังหวัด หรือ ค่าแรง/วัน
 
@@ -147,6 +166,7 @@ struct RoleSpecificHomeView: View {
     }
 
 }
+
 
 // MARK: - All Posts
 

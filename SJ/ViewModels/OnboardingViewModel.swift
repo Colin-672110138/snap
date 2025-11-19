@@ -42,6 +42,8 @@ class OnboardingViewModel: ObservableObject {
     @Published var employerReviewsByPostID: [String: [ReviewModel]] = [:]
     @Published var jobSeekerReviewsByPostID: [String: [ReviewModel]] = [:]
     
+    
+    
     @Published var ocrData: IDCardData = IDCardData()
     // MARK: - Mock Login (จำลองการทำงานของ LINE Login)
     func performLineLogin() {
@@ -388,6 +390,17 @@ class OnboardingViewModel: ObservableObject {
             myJobSeekerPosts[idx].reviewCount = list.count
         }
     }
+    
+    func getMatchedJobSeekers(forProvince province: String) -> [JobSeekerPostCardModel] {
+        let filtered = jobSeekerFeedPosts.filter { $0.province == province }
+        return Array(filtered.prefix(5))
+    }
+
+    func getMatchedEmployerPosts(forProvince province: String) -> [EmployerPostCardModel] {
+        let filtered = employerFeedPosts.filter { $0.province == province }
+        return Array(filtered.prefix(5))
+    }
+
     
     
     
