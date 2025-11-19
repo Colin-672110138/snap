@@ -605,12 +605,21 @@ class OnboardingViewModel: ObservableObject {
         let filtered = employerFeedPosts.filter { $0.province == province }
         return Array(filtered.shuffled().prefix(5))
     }
-
-    
-    
-    
-    
-    
 }
 
 
+// MARK: - Matching Logic
+extension OnboardingViewModel {
+
+    func matchedPosts(from posts: [JobSeekerPostCardModel]) -> [JobSeekerPostCardModel] {
+
+        // อ่านจังหวัดของผู้ใช้
+        let userProvince = userProfile.province
+
+        // ถ้า user ยังไม่ได้เลือกจังหวัด → คืน array ว่าง
+        guard userProvince.isEmpty == false else { return [] }
+
+        // Filter เฉพาะจังหวัดเดียวกัน
+        return posts.filter { $0.province == userProvince }
+    }
+}

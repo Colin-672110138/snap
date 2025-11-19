@@ -60,6 +60,7 @@ struct ConfirmProfileForMatchView: View {
                 ngan = String(viewModel.employerProfile.ngan ?? 0)
                 sqMeters = String(viewModel.employerProfile.squareMeters ?? 0)
                 longanTrees = String(viewModel.employerProfile.longanTreeCount ?? 0)
+                viewModel.userProfile.province = "เชียงใหม่"
             }
         }
     }
