@@ -8,25 +8,35 @@
 // Views/Component/AdCarouselView.swift (New File)
 
 import SwiftUI
+import UIKit
 
 struct AdCarouselView: View {
-    // Mock Data สำหรับโฆษณา
-    let mockAds = ["Ads 1: ปุ๋ยอินทรีย์ลดราคา", "Ads 2: บริการตัดแต่งกิ่ง", "Ads 3: ตลาดกลางผลผลิต"]
+    // รูปโฆษณา - เพิ่มรูปใน Assets.xcassets และอ้างอิงชื่อที่นี่
+    // ตัวอย่าง: ["Ad1", "Ad2", "Ad3"]
+    // ถ้ายังไม่มีรูป ให้ใช้ placeholder
+    var adImages: [UIImage] {
+        let adNames = ["Ad1", "Ad2", "Ad3"] // เปลี่ยนชื่อตามรูปที่เพิ่มใน Assets.xcassets
+        
+        return adNames.map { name in
+            if let image = UIImage(named: name) {
+                return image
+            } else {
+                // Placeholder ถ้ายังไม่มีรูป
+                return UIImage(systemName: "photo") ?? UIImage()
+            }
+        }
+    }
     
     var body: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 15) {
-                ForEach(mockAds, id: \.self) { ad in
-                    VStack {
-                        Text(ad)
-                            .font(.headline)
-                            .padding()
-                        Text("คลิกเพื่อดูรายละเอียด")
-                            .font(.caption)
-                    }
-                    .frame(width: 300, height: 150)
-                    .background(Color.yellow.opacity(0.3)) // สีโฆษณา
-                    .cornerRadius(12)
+                ForEach(Array(adImages.enumerated()), id: \.offset) { index, image in
+                    Image(uiImage: image)
+                        .resizable()
+                        .scaledToFill()
+                        .frame(width: 300, height: 150)
+                        .clipped()
+                        .cornerRadius(12)
                 }
             }
             .padding(.horizontal)

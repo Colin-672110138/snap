@@ -11,6 +11,22 @@ struct EmployerPostDetailView: View {
         viewModel.employerReviewsByPostID[post.postID] ?? []
     }
     
+    // ตรวจสอบว่าเป็นโพสต์ของตัวเองหรือไม่
+    var isMyPost: Bool {
+        viewModel.myEmployerPosts.contains { $0.postID == post.postID }
+    }
+    
+    // ตรวจสอบว่าเคยให้คะแนนไปแล้วหรือยัง
+    var hasAlreadyRated: Bool {
+        let currentUserID = viewModel.userProfile.lineID
+        return reviews.contains { $0.reviewerID == currentUserID }
+    }
+    
+    // ตรวจสอบว่าสามารถให้คะแนนได้หรือไม่
+    var canRate: Bool {
+        !isMyPost && !hasAlreadyRated
+    }
+    
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
@@ -66,8 +82,18 @@ struct EmployerPostDetailView: View {
                     HStack {
                         Text("รีวิว/ให้คะแนน").font(.title3).bold()
                         Spacer()
-                        Button("ให้คะแนน") {
-                            showingRatingSheet = true
+                        if canRate {
+                            Button("ให้คะแนน") {
+                                showingRatingSheet = true
+                            }
+                        } else if isMyPost {
+                            Text("ไม่สามารถให้คะแนนโพสต์ของตัวเองได้")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                        } else if hasAlreadyRated {
+                            Text("คุณได้ให้คะแนนแล้ว")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
                         }
                     }
                     

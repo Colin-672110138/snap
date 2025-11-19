@@ -7,7 +7,7 @@
 
 // ViewModels/OnboardingViewModel.swift
 
-import Foundation
+import Foundation   
 import SwiftUI // <--- ต้องมี
 import Combine // <--- ต้องมี
 import UIKit
@@ -45,14 +45,25 @@ class OnboardingViewModel: ObservableObject {
     
     
     @Published var ocrData: IDCardData = IDCardData()
+    
+    // MARK: - Helper: Generate Random Phone Number
+    // สุ่มเบอร์โทรศัพท์ไทย (10 หลัก)
+    private func generateRandomPhoneNumber() -> String {
+        let prefixes = ["081", "082", "083", "084", "085", "086", "087", "088", "089", "090", "091", "092", "093", "094", "095", "096", "097", "098", "099"]
+        let prefix = prefixes.randomElement() ?? "081"
+        let number1 = Int.random(in: 100...999)
+        let number2 = Int.random(in: 1000...9999)
+        return "\(prefix)-\(number1)-\(number2)"
+    }
+    
     // MARK: - Mock Login (จำลองการทำงานของ LINE Login)
     func performLineLogin() {
         // --- จำลองการทำงานของ LineLoginService ---
         // ในโปรเจกต์จริงจะมีการเรียกใช้ SDK ของ LINE ที่นี่
         
         // Mock Data: สมมติว่าดึงชื่อมาได้
-        userProfile.lineID = "U1234567890"
-        userProfile.name = "สมหมาย เกษตรดี" // ชื่อที่ดึงมาจาก LINE
+        userProfile.lineID = "UDl97943DWfsePV34p890"
+        userProfile.name = "Rachanon" // ชื่อที่ดึงมาจาก LINE
         
         // หากสำเร็จ
         isAuthenticated = true
@@ -70,12 +81,12 @@ class OnboardingViewModel: ObservableObject {
             // เมื่อรูปถ่ายคู่บัตร (หน้า 5) ถูกอัปโหลด
             
             // Mock Data: สมมติว่า OCR อ่านข้อมูลได้
-            ocrData.idCardNumber = "1-1205-10123-45-7"
+            ocrData.idCardNumber = "1-51010-10492-71-9"
             ocrData.title = "นาย"
-            ocrData.firstName = "สมหมาย"
-            ocrData.lastName = "เกษตรดี"
-            ocrData.dateOfBirth = "01/01/2530"
-            ocrData.address = "99 หมู่ 5 ต.ลำไย อ.เมือง จ.เชียงใหม่ 50000"
+            ocrData.firstName = "รชานนท์"
+            ocrData.lastName = "อินต๊ะมี"
+            ocrData.dateOfBirth = "15/07/2006"
+            ocrData.address = "ที่อยู่ 46/2 หมู่ที่ 13  ต.ทาปลาดุก"
             
             // อัปเดตชื่อใน UserProfile ด้วยชื่อจากบัตร (ถ้ามีการแก้ไขในขั้นตอนก่อนหน้า)
             userProfile.name = "\(ocrData.title) \(ocrData.firstName) \(ocrData.lastName)"
@@ -138,80 +149,205 @@ class OnboardingViewModel: ObservableObject {
             return
         }
         
+        // ใช้ system icon เป็น default (สามารถเพิ่มรูปใน Assets.xcassets ได้ภายหลัง)
         let defaultProfileImage = UIImage(systemName: "person.circle.fill") ?? UIImage()
         let defaultPostImage = UIImage(systemName: "photo") ?? UIImage()
         
-        // ผู้หางาน (ให้ผู้จ้างงานเห็น)
+        let profile1 = defaultProfileImage
+        let profile2 = defaultProfileImage
+        let profile3 = defaultProfileImage
+        let profile4 = defaultProfileImage
+        let profile5 = defaultProfileImage
+        
+        let post1 = defaultPostImage
+        let post2 = defaultPostImage
+        let post3 = defaultPostImage
+        let post4 = defaultPostImage
+        let post5 = defaultPostImage
+        
+        // ผู้หางาน (ให้ผู้จ้างงานเห็น) - เฉพาะโพสต์เกี่ยวกับลำไย
         jobSeekerFeedPosts = [
             JobSeekerPostCardModel(
                 postID: UUID().uuidString,
-                profileImage: defaultProfileImage,
+                profileImage: profile1,
                 userName: "สมหญิง ชอบเก็บ",
                 postTime: "2 ชม.ที่แล้ว",
                 hourlyRate: "450/วัน",
                 currentRating: 4.8,
                 reviewCount: 15,
-                isFavorite: true,
-                postImage: defaultPostImage,
-                title: "รับเก็บลำไยด่วน 5 คน",
+                isFavorite: false,
+                postImage: post1,
+                title: "รับเก็บลำไยด่วน",
                 province: "เชียงใหม่",
                 numberPeople: 5,
-                contactNumber: "081-xxx-xxxx",
+                contactNumber: generateRandomPhoneNumber(),
                 startDate: "15 พ.ย."
             ),
             JobSeekerPostCardModel(
                 postID: UUID().uuidString,
-                profileImage: defaultProfileImage,
-                userName: "นาย A",
-                postTime: "1 วันที่แล้ว",
-                hourlyRate: "300/วัน",
-                currentRating: 4.1,
-                reviewCount: 8,
+                profileImage: profile2,
+                userName: "นายสมชาย ขยันงาน",
+                postTime: "6 ชม.ที่แล้ว",
+                hourlyRate: "400/วัน",
+                currentRating: 4.6,
+                reviewCount: 12,
                 isFavorite: false,
-                postImage: defaultPostImage,
-                title: "รับคัดแยกผลผลิต/ขนส่ง",
+                postImage: post2,
+                title: "รับลงลำไย",
+                province: "เชียงใหม่",
+                numberPeople: 4,
+                contactNumber: generateRandomPhoneNumber(),
+                startDate: "18 พ.ย."
+            ),
+            JobSeekerPostCardModel(
+                postID: UUID().uuidString,
+                profileImage: profile3,
+                userName: "นางสาวบัว ใจดี",
+                postTime: "3 ชม.ที่แล้ว",
+                hourlyRate: "420/วัน",
+                currentRating: 4.7,
+                reviewCount: 18,
+                isFavorite: false,
+                postImage: post3,
+                title: "รับเก็บลำไย",
                 province: "ลำพูน",
-                numberPeople: 2,
-                contactNumber: "099-xxx-xxxx",
+                numberPeople: 6,
+                contactNumber: generateRandomPhoneNumber(),
                 startDate: "20 พ.ย."
+            ),
+            JobSeekerPostCardModel(
+                postID: UUID().uuidString,
+                profileImage: profile4,
+                userName: "นายประเสริฐ ทำงานดี",
+                postTime: "5 ชม.ที่แล้ว",
+                hourlyRate: "380/วัน",
+                currentRating: 4.4,
+                reviewCount: 14,
+                isFavorite: false,
+                postImage: post4,
+                title: "รับลงลำไย",
+                province: "เชียงราย",
+                numberPeople: 3,
+                contactNumber: generateRandomPhoneNumber(),
+                startDate: "22 พ.ย."
+            ),
+            JobSeekerPostCardModel(
+                postID: UUID().uuidString,
+                profileImage: profile5,
+                userName: "นางมาลี มีประสบการณ์",
+                postTime: "1 วันที่แล้ว",
+                hourlyRate: "470/วัน",
+                currentRating: 4.9,
+                reviewCount: 25,
+                isFavorite: false,
+                postImage: post5,
+                title: "รับเก็บลำไยด่วน",
+                province: "เชียงใหม่",
+                numberPeople: 8,
+                contactNumber: generateRandomPhoneNumber(),
+                startDate: "19 พ.ย."
             )
         ]
         
-        // ผู้จ้างงาน (ให้ผู้หางานเห็น)
+        // ใช้ system icon เป็น default สำหรับผู้จ้างงาน
+        let employerProfile1 = defaultProfileImage
+        let employerProfile2 = defaultProfileImage
+        let employerProfile3 = defaultProfileImage
+        let employerProfile4 = defaultProfileImage
+        let employerProfile5 = defaultProfileImage
+        
+        let employerPost1 = defaultPostImage
+        let employerPost2 = defaultPostImage
+        let employerPost3 = defaultPostImage
+        let employerPost4 = defaultPostImage
+        let employerPost5 = defaultPostImage
+        
+        // ผู้จ้างงาน (ให้ผู้หางานเห็น) - เฉพาะโพสต์เกี่ยวกับลำไย
         employerFeedPosts = [
             EmployerPostCardModel(
                 postID: UUID().uuidString,
-                profileImage: defaultProfileImage,
+                profileImage: employerProfile1,
                 farmName: "สวนลำไยคุณชาย",
                 postTime: "1 ชม.ที่แล้ว",
                 letCompensation: "500/วัน",
                 currentRating: 4.5,
                 reviewCount: 22,
                 isFavorite: false,
-                postImage: defaultPostImage,
-                title: "ด่วน! หาคนงาน 10 คน เก็บต.อ.",
+                postImage: employerPost1,
+                title: "ด่วน! หาคนงานเก็บลำไย",
                 province: "ลำพูน",
                 areaSize: "15 ไร่",
                 welfare: "มีข้าวฟรี/น้ำดื่ม",
                 startDate: "16 พ.ย.",
-                contactNumber: "089-xxx-xxxx"
+                contactNumber: generateRandomPhoneNumber()
             ),
             EmployerPostCardModel(
                 postID: UUID().uuidString,
-                profileImage: defaultProfileImage,
+                profileImage: employerProfile2,
+                farmName: "สวนลำไยคุณแม่",
+                postTime: "2 ชม.ที่แล้ว",
+                letCompensation: "450/วัน",
+                currentRating: 4.6,
+                reviewCount: 16,
+                isFavorite: false,
+                postImage: employerPost2,
+                title: "หาคนงานลงลำไย",
+                province: "เชียงใหม่",
+                areaSize: "12 ไร่",
+                welfare: "อาหารกลางวันฟรี",
+                startDate: "17 พ.ย.",
+                contactNumber: generateRandomPhoneNumber()
+            ),
+            EmployerPostCardModel(
+                postID: UUID().uuidString,
+                profileImage: employerProfile3,
                 farmName: "ไร่ลุงดำ",
-                postTime: "5 ชม.ที่แล้ว",
-                letCompensation: "400/วัน",
-                currentRating: 4.0,
-                reviewCount: 10,
-                isFavorite: true,
-                postImage: defaultPostImage,
-                title: "เก็บคัดแยกผลผลิต 3 ตัน",
+                postTime: "4 ชม.ที่แล้ว",
+                letCompensation: "480/วัน",
+                currentRating: 4.4,
+                reviewCount: 18,
+                isFavorite: false,
+                postImage: employerPost3,
+                title: "หาคนงานเก็บลำไย",
                 province: "เชียงราย",
-                areaSize: "5 ไร่",
+                areaSize: "20 ไร่",
                 welfare: "ที่พักฟรี",
-                startDate: "25 พ.ย.",
-                contactNumber: "066-xxx-xxxx"
+                startDate: "21 พ.ย.",
+                contactNumber: generateRandomPhoneNumber()
+            ),
+            EmployerPostCardModel(
+                postID: UUID().uuidString,
+                profileImage: employerProfile4,
+                farmName: "สวนผลไม้คุณป้า",
+                postTime: "3 ชม.ที่แล้ว",
+                letCompensation: "420/วัน",
+                currentRating: 4.3,
+                reviewCount: 13,
+                isFavorite: false,
+                postImage: employerPost4,
+                title: "ต้องการคนงานลงลำไย",
+                province: "ลำปาง",
+                areaSize: "10 ไร่",
+                welfare: "รถรับส่งฟรี",
+                startDate: "23 พ.ย.",
+                contactNumber: generateRandomPhoneNumber()
+            ),
+            EmployerPostCardModel(
+                postID: UUID().uuidString,
+                profileImage: employerProfile5,
+                farmName: "สวนลำไยคุณตา",
+                postTime: "7 ชม.ที่แล้ว",
+                letCompensation: "460/วัน",
+                currentRating: 4.7,
+                reviewCount: 20,
+                isFavorite: false,
+                postImage: employerPost5,
+                title: "ด่วน! หาคนงานเก็บลำไย",
+                province: "เชียงใหม่",
+                areaSize: "30 ไร่",
+                welfare: "อาหารครบ 3 มื้อ",
+                startDate: "24 พ.ย.",
+                contactNumber: generateRandomPhoneNumber()
             )
         ]
         
@@ -323,10 +459,55 @@ class OnboardingViewModel: ObservableObject {
         }
     }
     
-    // ให้ดาวโพสต์ “จ้างงาน”
+    // MARK: - Delete Post
+    
+    func deleteEmployerPost(postID: String) {
+        // ลบจาก myEmployerPosts
+        myEmployerPosts.removeAll { $0.postID == postID }
+        
+        // ลบจาก employerFeedPosts
+        employerFeedPosts.removeAll { $0.postID == postID }
+        
+        // ลบจาก favoriteEmployerPosts ถ้ามี
+        favoriteEmployerPosts.removeAll { $0.postID == postID }
+        
+        // ลบ reviews ที่เกี่ยวข้อง
+        employerReviewsByPostID.removeValue(forKey: postID)
+    }
+    
+    func deleteJobSeekerPost(postID: String) {
+        // ลบจาก myJobSeekerPosts
+        myJobSeekerPosts.removeAll { $0.postID == postID }
+        
+        // ลบจาก jobSeekerFeedPosts
+        jobSeekerFeedPosts.removeAll { $0.postID == postID }
+        
+        // ลบจาก favoriteJobSeekerPosts ถ้ามี
+        favoriteJobSeekerPosts.removeAll { $0.postID == postID }
+        
+        // ลบ reviews ที่เกี่ยวข้อง
+        jobSeekerReviewsByPostID.removeValue(forKey: postID)
+    }
+    
+    // ให้ดาวโพสต์ "จ้างงาน"
     func addReview(forEmployerPost post: EmployerPostCardModel, rating: Int) {
         let reviewerID = userProfile.lineID
         let reviewerName = userProfile.name.isEmpty ? "ผู้ใช้" : userProfile.name
+        
+        // ตรวจสอบว่าเป็นโพสต์ของตัวเองหรือไม่
+        let isMyPost = myEmployerPosts.contains { $0.postID == post.postID }
+        if isMyPost {
+            print("ไม่สามารถให้คะแนนโพสต์ของตัวเองได้")
+            return
+        }
+        
+        // ตรวจสอบว่าเคยให้คะแนนไปแล้วหรือยัง
+        var list = employerReviewsByPostID[post.postID] ?? []
+        let hasAlreadyRated = list.contains { $0.reviewerID == reviewerID }
+        if hasAlreadyRated {
+            print("คุณได้ให้คะแนนโพสต์นี้แล้ว")
+            return
+        }
         
         let review = ReviewModel(
             reviewerID: reviewerID,
@@ -336,7 +517,6 @@ class OnboardingViewModel: ObservableObject {
         )
         
         // 1) เก็บลง dictionary
-        var list = employerReviewsByPostID[post.postID] ?? []
         list.append(review)
         employerReviewsByPostID[post.postID] = list
         
@@ -357,10 +537,25 @@ class OnboardingViewModel: ObservableObject {
         }
     }
 
-    // ให้ดาวโพสต์ “หางาน”
+    // ให้ดาวโพสต์ "หางาน"
     func addReview(forJobSeekerPost post: JobSeekerPostCardModel, rating: Int) {
         let reviewerID = userProfile.lineID
         let reviewerName = userProfile.name.isEmpty ? "ผู้ใช้" : userProfile.name
+        
+        // ตรวจสอบว่าเป็นโพสต์ของตัวเองหรือไม่
+        let isMyPost = myJobSeekerPosts.contains { $0.postID == post.postID }
+        if isMyPost {
+            print("ไม่สามารถให้คะแนนโพสต์ของตัวเองได้")
+            return
+        }
+        
+        // ตรวจสอบว่าเคยให้คะแนนไปแล้วหรือยัง
+        var list = jobSeekerReviewsByPostID[post.postID] ?? []
+        let hasAlreadyRated = list.contains { $0.reviewerID == reviewerID }
+        if hasAlreadyRated {
+            print("คุณได้ให้คะแนนโพสต์นี้แล้ว")
+            return
+        }
         
         let review = ReviewModel(
             reviewerID: reviewerID,
@@ -370,7 +565,6 @@ class OnboardingViewModel: ObservableObject {
         )
         
         // 1) เก็บลง dictionary
-        var list = jobSeekerReviewsByPostID[post.postID] ?? []
         list.append(review)
         jobSeekerReviewsByPostID[post.postID] = list
         

@@ -17,7 +17,7 @@ struct FavoritesView: View {
                             .foregroundColor(.secondary)
                             .padding()
                     } else {
-                        ForEach(viewModel.myJobSeekerPosts) { post in
+                        ForEach(viewModel.favoriteJobSeekerPosts) { post in
                             JobSeekerPostSummaryCard(viewModel: viewModel, post: post) { post in
                                 viewModel.toggleFavorite(for: post)
                             }

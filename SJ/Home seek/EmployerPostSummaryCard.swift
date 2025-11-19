@@ -6,6 +6,7 @@ struct EmployerPostSummaryCard: View {
     @ObservedObject var viewModel: OnboardingViewModel   // ✅ เพิ่มบรรทัดนี้
     let post: EmployerPostCardModel
     let onToggleFavorite: (EmployerPostCardModel) -> Void
+    var showFavoriteButton: Bool = true  // กำหนดค่า default เป็น true
 
     var body: some View {
         // ✅ ส่ง viewModel เข้าไปในหน้า Detail ด้วย
@@ -30,11 +31,13 @@ struct EmployerPostSummaryCard: View {
                             .font(.headline)
                             .foregroundColor(.green)
                         
-                        Button(action: {
-                            onToggleFavorite(post)
-                        }) {
-                            Image(systemName: post.isFavorite ? "heart.fill" : "heart")
-                                .foregroundColor(post.isFavorite ? .red : .gray)
+                        if showFavoriteButton {
+                            Button(action: {
+                                onToggleFavorite(post)
+                            }) {
+                                Image(systemName: post.isFavorite ? "heart.fill" : "heart")
+                                    .foregroundColor(post.isFavorite ? .red : .gray)
+                            }
                         }
                     }
                 }

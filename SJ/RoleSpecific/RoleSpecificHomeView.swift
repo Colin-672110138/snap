@@ -84,10 +84,10 @@ struct RoleSpecificHomeView: View {
                 }
                 .padding(.horizontal)
                 
-                // MARK: - Feed
+                // MARK: - Feed (แสดงแค่ 3 โพสต์แรก)
                 VStack(spacing: 15) {
                     if viewModel.userProfile.role == .employer {
-                        ForEach(filteredJobSeekerFeed) { post in
+                        ForEach(Array(filteredJobSeekerFeed.prefix(3))) { post in
                             JobSeekerPostSummaryCard(
                                 viewModel: viewModel,
                                 post: post
@@ -96,7 +96,7 @@ struct RoleSpecificHomeView: View {
                             }
                         }
                     } else {
-                        ForEach(filteredEmployerFeed) { post in
+                        ForEach(Array(filteredEmployerFeed.prefix(3))) { post in
                             EmployerPostSummaryCard(
                                 viewModel: viewModel,
                                 post: post

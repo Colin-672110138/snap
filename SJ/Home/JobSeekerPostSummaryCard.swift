@@ -4,8 +4,7 @@ struct JobSeekerPostSummaryCard: View {
     @ObservedObject var viewModel: OnboardingViewModel
     let post: JobSeekerPostCardModel
     let onToggleFavorite: (JobSeekerPostCardModel) -> Void
-    
-    @State private var isFavorite: Bool = false
+    var showFavoriteButton: Bool = true  // กำหนดค่า default เป็น true
 
     var body: some View {
         NavigationLink(destination: JobSeekerPostDetailView(post: post, viewModel: viewModel)) {
@@ -29,15 +28,13 @@ struct JobSeekerPostSummaryCard: View {
                             .font(.headline)
                             .foregroundColor(.green)
                         
-                        Button(action: {
-                            onToggleFavorite(post)
-                            isFavorite.toggle()
-                        }) {
-                            Image(systemName: post.isFavorite ? "heart.fill" : "heart")
-                                .foregroundColor(post.isFavorite ? .red : .gray)
-                        }
-                        .onAppear {
-                            self.isFavorite = post.isFavorite
+                        if showFavoriteButton {
+                            Button(action: {
+                                onToggleFavorite(post)
+                            }) {
+                                Image(systemName: post.isFavorite ? "heart.fill" : "heart")
+                                    .foregroundColor(post.isFavorite ? .red : .gray)
+                            }
                         }
                     }
                 }

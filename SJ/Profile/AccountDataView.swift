@@ -118,7 +118,7 @@ struct ProfileInfoRow: View {
                 .foregroundColor(.secondary)
                 .frame(width: 120, alignment: .leading)
             Text(value)
-                .foregroundColor(.primary)
+                .foregroundColor(.gray)
                 .lineLimit(nil)
         }
     }
