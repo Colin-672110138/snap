@@ -2,7 +2,14 @@ import SwiftUI
 
 struct MatchResultView: View {
     @ObservedObject var viewModel: OnboardingViewModel
-    @State private var matchedPosts: [JobSeekerPostCardModel] = []
+    @State private var matchedPostIDs: [String] = []
+    
+    // ดึงโพสต์ที่ match จาก viewModel โดยใช้ postID
+    var matchedPosts: [JobSeekerPostCardModel] {
+        matchedPostIDs.compactMap { postID in
+            viewModel.jobSeekerFeedPosts.first { $0.postID == postID }
+        }
+    }
     
     var body: some View {
         ScrollView {
@@ -15,7 +22,12 @@ struct MatchResultView: View {
                         .padding(.top, 20)
                 } else {
                     ForEach(matchedPosts) { post in
-                        matchRow(post)
+                        JobSeekerPostSummaryCard(
+                            viewModel: viewModel,
+                            post: post
+                        ) { post in
+                            viewModel.toggleFavorite(for: post)
+                        }
                     }
                 }
 
@@ -43,32 +55,7 @@ struct MatchResultView: View {
     // MARK: - ฟังก์ชันสุ่มคนใหม่
     func refreshMatching() {
         let province = viewModel.userProfile.province
-        matchedPosts = viewModel.getRandomMatchedJobSeekers(forProvince: province)
-    }
-    
-    // MARK: - แถวโชว์ข้อมูลผลแมตช์
-    @ViewBuilder
-    func matchRow(_ post: JobSeekerPostCardModel) -> some View {
-        VStack(alignment: .leading, spacing: 6) {
-            Text(post.title)
-                .font(.headline)
-            
-            Text("จังหวัด: \(post.province)")
-                .font(.subheadline)
-            
-            Text("คนงาน: \(post.numberPeople) คน")
-                .font(.subheadline)
-            
-            Text("ค่าแรง: \(post.hourlyRate)")
-                .font(.subheadline)
-            
-            Text("เบอร์ติดต่อ: \(post.contactNumber)")
-                .font(.subheadline)
-        }
-        .padding()
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Color.white)
-        .cornerRadius(12)
-        .shadow(radius: 2)
+        let matched = viewModel.getRandomMatchedJobSeekers(forProvince: province)
+        matchedPostIDs = matched.map { $0.postID }
     }
 }

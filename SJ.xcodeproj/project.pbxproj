@@ -6,13 +6,31 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		6BFDF7182ECE576E00565583 /* LineSDK in Frameworks */ = {isa = PBXBuildFile; productRef = 6BFDF7172ECE576E00565583 /* LineSDK */; };
+		6BFDF71A2ECE576E00565583 /* LineSDKObjC in Frameworks */ = {isa = PBXBuildFile; productRef = 6BFDF7192ECE576E00565583 /* LineSDKObjC */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		B80E68592EC44A1E0093E5D0 /* SJ.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SJ.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		6BFDF71C2ECE57B100565583 /* Exceptions for "SJ" folder in "SJ" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = B80E68582EC44A1E0093E5D0 /* SJ */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		B80E685B2EC44A1E0093E5D0 /* SJ */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				6BFDF71C2ECE57B100565583 /* Exceptions for "SJ" folder in "SJ" target */,
+			);
 			path = SJ;
 			sourceTree = "<group>";
 		};
@@ -23,6 +41,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6BFDF7182ECE576E00565583 /* LineSDK in Frameworks */,
+				6BFDF71A2ECE576E00565583 /* LineSDKObjC in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -65,6 +85,8 @@
 			);
 			name = SJ;
 			packageProductDependencies = (
+				6BFDF7172ECE576E00565583 /* LineSDK */,
+				6BFDF7192ECE576E00565583 /* LineSDKObjC */,
 			);
 			productName = SJ;
 			productReference = B80E68592EC44A1E0093E5D0 /* SJ.app */;
@@ -94,6 +116,9 @@
 			);
 			mainGroup = B80E68502EC44A1E0093E5D0;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				6BFDF7162ECE576E00565583 /* XCRemoteSwiftPackageReference "line-sdk-ios-swift" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = B80E685A2EC44A1E0093E5D0 /* Products */;
 			projectDirPath = "";
@@ -256,6 +281,7 @@
 				DEVELOPMENT_TEAM = J284D56ZY3;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = SJ/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -288,6 +314,7 @@
 				DEVELOPMENT_TEAM = J284D56ZY3;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = SJ/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -332,6 +359,30 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		6BFDF7162ECE576E00565583 /* XCRemoteSwiftPackageReference "line-sdk-ios-swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/line/line-sdk-ios-swift";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.14.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		6BFDF7172ECE576E00565583 /* LineSDK */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 6BFDF7162ECE576E00565583 /* XCRemoteSwiftPackageReference "line-sdk-ios-swift" */;
+			productName = LineSDK;
+		};
+		6BFDF7192ECE576E00565583 /* LineSDKObjC */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 6BFDF7162ECE576E00565583 /* XCRemoteSwiftPackageReference "line-sdk-ios-swift" */;
+			productName = LineSDKObjC;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = B80E68512EC44A1E0093E5D0 /* Project object */;
 }

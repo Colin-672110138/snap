@@ -11,6 +11,7 @@ import Foundation
 import SwiftUI // <--- ต้องมี
 import Combine // <--- ต้องมี
 import UIKit
+import LineSDK
 
 class OnboardingViewModel: ObservableObject {
     // เก็บข้อมูลผู้ใช้ทั้งหมดในระหว่างขั้นตอน Onboarding
@@ -56,17 +57,84 @@ class OnboardingViewModel: ObservableObject {
         return "\(prefix)-\(number1)-\(number2)"
     }
     
-    // MARK: - Mock Login (จำลองการทำงานของ LINE Login)
+    // MARK: - LINE Login
     func performLineLogin() {
-        // --- จำลองการทำงานของ LineLoginService ---
-        // ในโปรเจกต์จริงจะมีการเรียกใช้ SDK ของ LINE ที่นี่
+        // ตรวจสอบว่ามี login process อยู่แล้วหรือไม่
+        if LineLoginService.shared.isLoggingIn {
+            print("Login process is already in progress")
+            // ถ้ามี process อยู่แล้ว ให้รอสักครู่แล้วตรวจสอบอีกครั้ง
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                self.checkLoginStatus()
+            }
+            return
+        }
         
+        LineLoginService.shared.setLoggingIn(true)
+        LineLoginService.shared.login { [weak self] result in
+            DispatchQueue.main.async {
+                LineLoginService.shared.setLoggingIn(false)
+                
+                switch result {
+                case .success(let lineProfile):
+                    print("Login completion callback - success: \(lineProfile.userID)")
+                    // บันทึกข้อมูลจาก LINE
+                    self?.userProfile.lineID = lineProfile.userID
+                    self?.userProfile.name = lineProfile.displayName
+                    
+                    // Set authenticated ทันที (ไม่ต้อง delay)
+                    self?.isAuthenticated = true
+                    print("isAuthenticated set to true in completion callback")
+                    
+                case .failure(let error):
+                    print("LINE Login Error: \(error.localizedDescription)")
+                    // ในกรณีที่ LINE Login ล้มเหลว อาจจะใช้ Mock Login เป็น fallback
+                    // หรือแสดง error message ให้ผู้ใช้
+                    self?.performMockLineLogin()
+                }
+            }
+        }
+    }
+    
+    // MARK: - Check Login Status
+    func checkLoginStatus() {
+        print("checkLoginStatus called - isAuthorized: \(LoginManager.shared.isAuthorized)")
+        // ตรวจสอบว่า login สำเร็จหรือไม่
+        if LoginManager.shared.isAuthorized {
+            print("LoginManager is authorized, fetching profile...")
+            // ดึงข้อมูล profile
+            API.getProfile { [weak self] result in
+                DispatchQueue.main.async {
+                    switch result {
+                    case .success(let profile):
+                        print("Profile fetched in checkLoginStatus: \(profile.userID)")
+                        // บันทึกข้อมูลจาก LINE
+                        self?.userProfile.lineID = profile.userID
+                        self?.userProfile.name = profile.displayName
+                        
+                        // Set authenticated
+                        self?.isAuthenticated = true
+                        print("isAuthenticated set to true in checkLoginStatus")
+                        
+                    case .failure(let error):
+                        print("Failed to get profile in checkLoginStatus: \(error.localizedDescription)")
+                    }
+                }
+            }
+        } else {
+            print("LoginManager not authorized in checkLoginStatus")
+        }
+    }
+    
+    // MARK: - Mock Login (สำหรับ fallback หรือ development)
+    func performMockLineLogin() {
+        print("Using mock login as fallback")
         // Mock Data: สมมติว่าดึงชื่อมาได้
         userProfile.lineID = "UDl97943DWfsePV34p890"
         userProfile.name = "Rachanon" // ชื่อที่ดึงมาจาก LINE
         
         // หากสำเร็จ
         isAuthenticated = true
+        print("Mock login completed - isAuthenticated: \(isAuthenticated)")
     }
     
     // MARK: - Role Selection
@@ -130,16 +198,30 @@ class OnboardingViewModel: ObservableObject {
             }
     
     func logout() {
-            // รีเซ็ตข้อมูลผู้ใช้ทั้งหมด (ถ้าต้องการ)
-            userProfile = UserProfile()
-            ocrData = IDCardData()
-            
-            // กำหนดให้ isLoggedOut เป็น true เพื่อ Trigger การเปลี่ยนหน้า
-            isLoggedOut = true
-            
-            // กำหนดให้ isAuthenticated เป็น false ด้วย (ถ้าคุณใช้ Logic นี้ใน ContentView)
-            isAuthenticated = false
+        // Logout จาก LINE SDK
+        LineLoginService.shared.logout { [weak self] result in
+            DispatchQueue.main.async {
+                switch result {
+                case .success:
+                    print("LINE Logout successful")
+                case .failure(let error):
+                    print("LINE Logout error: \(error.localizedDescription)")
+                }
+                
+                // รีเซ็ตข้อมูลผู้ใช้ทั้งหมด
+                self?.userProfile = UserProfile()
+                self?.ocrData = IDCardData()
+                
+                // รีเซ็ตสถานะอื่นๆ
+                self?.isProfileFullyVerified = false
+                self?.hasSelectedRole = false
+                self?.isLoggedOut = true
+                
+                // กำหนดให้ isAuthenticated เป็น false (ต้องทำเป็นลำดับสุดท้าย)
+                self?.isAuthenticated = false
+            }
         }
+    }
     
     
     

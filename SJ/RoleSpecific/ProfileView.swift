@@ -115,6 +115,8 @@ struct ProfileHeaderButton: View {
                 Text("ID: \(viewModel.userProfile.lineID)")
                     .font(.subheadline)
                     .foregroundColor(.secondary)
+                    .lineLimit(1)
+                    .truncationMode(.tail)
             }
             
             Spacer()
