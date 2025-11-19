@@ -15,7 +15,7 @@ struct AdCarouselView: View {
     // ตัวอย่าง: ["Ad1", "Ad2", "Ad3"]
     // ถ้ายังไม่มีรูป ให้ใช้ placeholder
     var adImages: [UIImage] {
-        let adNames = ["Ad1", "Ad2", "Ad3"] // เปลี่ยนชื่อตามรูปที่เพิ่มใน Assets.xcassets
+        let adNames = ["1as", "2as", "3as"] // เปลี่ยนชื่อตามรูปที่เพิ่มใน Assets.xcassets
         
         return adNames.map { name in
             if let image = UIImage(named: name) {
