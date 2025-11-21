@@ -41,25 +41,6 @@ struct IDCardUploadView: View {
                         if let data = try? await newItem?.loadTransferable(type: Data.self),
                            let uiImage = UIImage(data: data) {
 
-                            if let mockImage = UIImage(named: "mockcard") {
-                                let mockW = mockImage.size.width
-                                let mockH = mockImage.size.height
-
-                                let pickedW = uiImage.size.width
-                                let pickedH = uiImage.size.height
-
-                                // ตรวจขนาดภาพ
-                                if mockW != pickedW || mockH != pickedH {
-                                    frontError = "ไม่สามารถหาบัตรประชาชนเจอ"
-                                    return
-                                } else {
-                                    frontError = nil
-                                }
-                            } else {
-                                frontError = "ไม่สามารถหาบัตรประชาชนเจอ"
-                                return
-                            }
-
                             // ผ่านการตรวจสอบ → เซตรูป
                             self.viewModel.idCardFrontImage = uiImage
                             self.frontImage = Image(uiImage: uiImage)
