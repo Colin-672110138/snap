@@ -17,6 +17,9 @@ struct IDCardUploadView: View {
     @State private var frontImage: Image?
     @State private var backImage: Image?
     
+    // สถานะสำหรับ error message
+    @State private var frontError: String?
+    
     var isReadyToProceed: Bool {
         // ตรวจสอบจาก UIImage ใน ViewModel เพื่อความแน่ใจ
         return viewModel.idCardFrontImage != nil && viewModel.idCardBackImage != nil
@@ -33,18 +36,43 @@ struct IDCardUploadView: View {
 
             // MARK: - อัปโหลดรูปด้านหน้า
             UploadArea(title: "1. ด้านหน้าบัตรประชาชน", image: $frontImage, item: $frontPhotoItem)
-            .onChange(of: frontPhotoItem) { newItem in
-                Task {
-                    // โหลดและบันทึก UIImage
-                    if let data = try? await newItem?.loadTransferable(type: Data.self),
-                       let uiImage = UIImage(data: data) {
-                        
-                        self.viewModel.idCardFrontImage = uiImage // <<< บันทึก UIImage
-                        self.frontImage = Image(uiImage: uiImage)  // แสดงผล
+                .onChange(of: frontPhotoItem) { newItem in
+                    Task {
+                        if let data = try? await newItem?.loadTransferable(type: Data.self),
+                           let uiImage = UIImage(data: data) {
+
+                            if let mockImage = UIImage(named: "mockcard") {
+                                let mockW = mockImage.size.width
+                                let mockH = mockImage.size.height
+
+                                let pickedW = uiImage.size.width
+                                let pickedH = uiImage.size.height
+
+                                // ตรวจขนาดภาพ
+                                if mockW != pickedW || mockH != pickedH {
+                                    frontError = "ไม่สามารถหาบัตรประชาชนเจอ"
+                                    return
+                                } else {
+                                    frontError = nil
+                                }
+                            } else {
+                                frontError = "ไม่สามารถหาบัตรประชาชนเจอ"
+                                return
+                            }
+
+                            // ผ่านการตรวจสอบ → เซตรูป
+                            self.viewModel.idCardFrontImage = uiImage
+                            self.frontImage = Image(uiImage: uiImage)
+                        }
                     }
                 }
-            }
 
+            if let error = frontError {
+                    Text(error)
+                        .font(.caption)
+                        .foregroundColor(.red)
+                        .padding(.horizontal)
+                }
             // MARK: - อัปโหลดรูปด้านหลัง
             UploadArea(title: "2. ด้านหลังบัตรประชาชน", image: $backImage, item: $backPhotoItem)
             .onChange(of: backPhotoItem) { newItem in

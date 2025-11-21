@@ -114,11 +114,16 @@ struct RoleSpecificHomeView: View {
         }
         
         // MARK: - 🔥 ADD FLOATING MATCH BUTTON + SHEET HERE
+        // แสดงปุ่ม match เฉพาะเมื่อ role เป็น employer (ผู้จ้างงาน)
         .overlay(
-            MatchingButton {
-                showingMatchConfirm = true
-            }
-            .padding(),
+            Group {
+                if viewModel.userProfile.role == .employer {
+                    MatchingButton {
+                        showingMatchConfirm = true
+                    }
+                    .padding()
+                }
+            },
             alignment: .bottomTrailing
         )
         .sheet(isPresented: $showingMatchConfirm) {
